@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TimeManage</string>
+    <string name="cancle">取消</string>
+    <string name="title">请选择时间</string>
+    <string name="commit">确定</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
+    <string name="hour">时</string>
+    <string name="minute">分</string>
+    <string name="select_time_begin">选择开始时间</string>
+    <string name="begin_time">开始时间</string>
+    <string name="select_time_end">选择结束时间</string>
+    <string name="end_time">结束时间</string>
+</resources>

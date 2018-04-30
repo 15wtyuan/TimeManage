@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    app:cardElevation="5dp"
+    app:cardCornerRadius="10dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/description"
+            android:textSize="16.67sp"
+            android:textColor="#212121"
+            android:text="测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12.67sp"
+            android:layout_below="@+id/description"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/from_label"
+            android:text="from:"/>
+
+        <TextView
+            android:id="@+id/from_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/description"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/from_label"
+            android:textSize="12.67sp"
+            android:text="测试名字七个字"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12.67sp"
+            android:layout_below="@+id/from_label"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/begin_label"
+            android:text="开始时间:"/>
+
+        <TextView
+            android:id="@+id/begin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/from_label"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/begin_label"
+            android:textSize="12.67sp"
+            android:text="测试名字七个字"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12.67sp"
+            android:layout_below="@+id/begin_label"
+            android:layout_marginTop="2dp"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/end_label"
+            android:text="结束时间:"/>
+
+        <TextView
+            android:id="@+id/end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/begin_label"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/end_label"
+            android:textSize="12.67sp"
+            android:text="测试名字七个字"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/end_label"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="36.67dp"
+                android:layout_weight="1"
+                android:id="@+id/complete"
+                android:background="@drawable/green_button"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="16.67sp"
+                android:text="完成"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="36.67dp"
+                android:layout_weight="1"
+                android:id="@+id/edit"
+                android:background="@drawable/orange_button"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="#FFFFFF"
+                android:textSize="16.67sp"
+                android:text="编辑"/>
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+
+</android.support.v7.widget.CardView>
