@@ -23,7 +23,7 @@
         <activity android:name=".HomePageActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".AddPlanMyselfActivity"></activity>
+        <activity android:name=".AddPlanActivity"></activity>
     </application>
 
 </manifest>

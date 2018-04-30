@@ -169,8 +169,7 @@ public class HomePageActivity extends BaseActivity {
                             //Toast.makeText(TextOutsideCircleButtonActivity.this, "Clicked " + index, Toast.LENGTH_SHORT).show();
                             switch (index){
                                 case 0:
-                                    Intent intent = new Intent(HomePageActivity.this, AddPlanMyselfActivity.class);
-                                    startActivity(intent);
+                                    AddPlanActivity.actionStart(HomePageActivity.this,Integer.toString(userData.getUid()),Integer.toString(userData.getUid()),userData.getName(),userData.getName(),"0");
                                     break;
                                 case 1:
 
