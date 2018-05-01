@@ -21,6 +21,7 @@ import com.nightonke.boommenu.BoomMenuButton;
 import com.nightonke.boommenu.Util;
 import com.tt.timemanage.adapter.DrawerAdapter;
 import com.tt.timemanage.adapter.PlanListAdapter;
+import com.tt.timemanage.model.BaseJson;
 import com.tt.timemanage.model.PlanData;
 import com.tt.timemanage.model.PlanDataListJson;
 import com.tt.timemanage.model.UserData;
@@ -34,6 +35,8 @@ import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.FormBody;
@@ -42,7 +45,7 @@ import okhttp3.Response;
 
 public class HomePageActivity extends BaseActivity {
 
-    private UserData userData = new UserData();
+    public UserData userData = new UserData();
 
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
@@ -73,6 +76,7 @@ public class HomePageActivity extends BaseActivity {
         planList.setLayoutManager(layoutManager);
 //        planList.setLayoutManager(new
 //                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
+        planListAdapter.setOnItemClickListener(new PlanOnItemClickListener());
         planList.setAdapter(planListAdapter);
 
         initPlanList();//初始化列表
@@ -101,6 +105,7 @@ public class HomePageActivity extends BaseActivity {
         });
 
         mDrawerLayout = (DrawerLayout)findViewById(R.id.home_page);//右滑菜单
+        //mDrawerLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.my_item);//右滑菜单用RecyclerView实现
         LinearLayoutManager layoutManagerPlan = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManagerPlan);
@@ -113,7 +118,13 @@ public class HomePageActivity extends BaseActivity {
 
     }
 
-    private void initPlanList(){
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        initPlanList();
+    }
+
+    public void initPlanList(){
         planDataList.clear();//清空所有消息
         PlanData head = new PlanData();
         head.setPid(-10086);
@@ -147,9 +158,24 @@ public class HomePageActivity extends BaseActivity {
         Gson gson = new GsonBuilder().serializeNulls().create();
         PlanDataListJson planDataListJson = gson.fromJson(responseData, PlanDataListJson.class);//使用Gson处理获取的json
         if (planDataListJson.getMessage().equals("success")){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mDrawerLayout.setBackgroundColor(Color.parseColor("#FC911F"));
+                }
+            });
             planDataList.addAll(planDataListJson.getData());
         }
-        Log.d("test",Integer.toString(planDataList.size()));
+        if (planDataListJson.getCode()==500){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    showToase("点击右下角加号添加计划");
+                    mDrawerLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                }
+            });
+        }
+        //Log.d("test",Integer.toString(planDataList.size()));
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -169,7 +195,13 @@ public class HomePageActivity extends BaseActivity {
                             //Toast.makeText(TextOutsideCircleButtonActivity.this, "Clicked " + index, Toast.LENGTH_SHORT).show();
                             switch (index){
                                 case 0:
-                                    AddPlanActivity.actionStart(HomePageActivity.this,Integer.toString(userData.getUid()),Integer.toString(userData.getUid()),userData.getName(),userData.getName(),"0");
+                                    new Timer().schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            AddPlanActivity.actionStart(HomePageActivity.this,Integer.toString(userData.getUid()),Integer.toString(userData.getUid()),userData.getName(),userData.getName(),"0");
+                                        }
+                                    }, 300);//这里停留时间为1000=1s。
+
                                     break;
                                 case 1:
 
@@ -187,7 +219,7 @@ public class HomePageActivity extends BaseActivity {
             bmb.addBuilder(builder);
         }
         bmb.setButtonRadius(Util.dp2px(30));
-        bmb.setNormalColor(getResources().getColor(R.color.orange));
+        bmb.setNormalColor(getResources().getColor(R.color.colorPrimaryDark));
         bmb.setUnableColor(getResources().getColor(R.color.white));
         bmb.setHighlightedColor(getResources().getColor(R.color.white));
         bmb.setDotRadius(0);
@@ -248,6 +280,45 @@ public class HomePageActivity extends BaseActivity {
                     break;
             }
             mDrawerLayout.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    public class PlanOnItemClickListener implements PlanListAdapter.OnItemClickListener {//planlist 完成按钮的 监听
+
+        @Override
+        public void itemClick(final int position) {
+            RequestBody requestBody = new FormBody.Builder()
+                    .add("id",Integer.toString(planDataList.get(position).getPid()))
+                    .build();
+            HttpUtil.sendOkHttpRequest("http://120.79.137.28/tp/public/index.php/index/Plan/finishPlan",requestBody,new okhttp3.Callback(){
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.d("完成计划","链接失败");
+                }
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String responseData = response.body().string();
+                    Gson gson = new GsonBuilder().serializeNulls().create();
+                    BaseJson baseJson = gson.fromJson(responseData, BaseJson.class);//使用Gson处理获取的json
+                    if (baseJson.getCode()==300){
+                        Log.d("完成计划","成功");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                initPlanList();
+                            }
+                        });
+                    }else {
+                        final String msg = baseJson.getMessage();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                showToase(msg);
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
 

@@ -21,7 +21,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginLeft="10dp"
             android:id="@+id/description"
-            android:textSize="16.67sp"
+            android:textSize="18.67sp"
             android:textColor="#212121"
             android:text="测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字测试五个字"/>
 

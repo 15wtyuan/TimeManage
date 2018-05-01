@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.tt.timemanage.ChangePlanActivity;
 import com.tt.timemanage.HomePageActivity;
 import com.tt.timemanage.R;
 import com.tt.timemanage.model.PlanData;
@@ -103,17 +104,58 @@ public class PlanListAdapter extends RecyclerView.Adapter<PlanListAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         final PlanData planData = planDataList.get(position);
         if (holder instanceof NormalViewHolder) {
             NormalViewHolder normalViewHolder = (NormalViewHolder) holder;
             normalViewHolder.description.setText(planData.getDescription());
             normalViewHolder.from_id.setText(planData.getFrom_name());
-            normalViewHolder.begin.setText(TimeStamp2Date(Integer.toString(planData.getBegin()), "MM-dd HH:mm"));
-            normalViewHolder.end.setText(TimeStamp2Date(Integer.toString(planData.getEnd()), "MM-dd HH:mm"));
+            normalViewHolder.begin.setText(TimeStamp2Date(Integer.toString(planData.getBegin()), "yyyy-MM-dd HH:mm"));
+            normalViewHolder.end.setText(TimeStamp2Date(Integer.toString(planData.getEnd()), "yyyy-MM-dd HH:mm"));
+            if (planData.getState()==0){
+                normalViewHolder.complete.setBackgroundResource(R.drawable.green_button);
+                normalViewHolder.complete.setText("完成");
+            }else if (planData.getState()==1){
+                normalViewHolder.complete.setBackgroundResource(R.drawable.orange_button);
+                normalViewHolder.complete.setText("已完成");
+            }else if (planData.getState()==2){
+                normalViewHolder.complete.setBackgroundResource(R.drawable.orange_button);
+                normalViewHolder.complete.setText("已过期");
+            }
+            normalViewHolder.complete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(listener != null){
+                        listener.itemClick(position);
+                    }
+                }
+            });
+
+            normalViewHolder.edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ChangePlanActivity.actionStart(activity,planData.getHost_id(), planData.getFrom_id(), activity.userData.getName(), planData.getFrom_name(),
+                                    planData.getDescription(),Integer.toString(planData.getIs_everyday()), Integer.toString(planData.getState()), Integer.toString(planData.getBegin()) ,Integer.toString(planData.getEnd()) ,Integer.toString(planData.getPid()));
+                        }
+                    });
+                }
+            });
         }else if (holder instanceof HeaderViewHolder){
             HeaderViewHolder headerViewHolder = (HeaderViewHolder)holder;
         }
+    }
+
+    public OnItemClickListener listener;
+
+    public void setOnItemClickListener(OnItemClickListener listener){
+        this.listener = listener;
+    }
+
+    public interface OnItemClickListener{
+        void itemClick(int position);
     }
 
     @Override

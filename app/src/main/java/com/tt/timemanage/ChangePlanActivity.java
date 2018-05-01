@@ -1,10 +1,14 @@
 package com.tt.timemanage;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,39 +40,46 @@ import okhttp3.FormBody;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class AddPlanActivity extends BaseActivity implements View.OnClickListener {
+public class ChangePlanActivity extends BaseActivity implements View.OnClickListener {
 
     private RelativeLayout begin, end;
     private TextView current_begin, current_end;
     private CustomDatePicker customDatePicker1, customDatePicker2;
 
+    private RelativeLayout delete;
+
     private Spinner spinner;
-    private MyAdapter adapter;
+    private MyAdapter myAdapter;
+
+    private Spinner spinner2;
+    private MyAdapter myAdapter2;
 
     private List<String> dataList = Arrays.asList(
             "否",
             "是"
     );
 
+    private List<String> dataList2 = Arrays.asList(
+            "未完成",
+            "已完成",
+            "已过期"
+    );
+
     private Toolbar toolbar;
 
     private EditText content_editText;
 
-    int label;//存放是否每日计划
     private String begin_time,end_time;//存放开始时间和结束时间
-    private String host_id;
-    private String from_id;
-    private String from_name;
-    private String host_name;
-
-    private String type;//判断是给自己计划还是给朋友计划
+    private String host_id,from_id,from_name,host_name, description, is_everyday, state,  begin_originally , end_originally , id;
 
     private String msg;
+
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_plan);
+        setContentView(R.layout.activity_change_plan);
 
         //取出intent的数据
         Intent intent = getIntent();
@@ -76,7 +87,18 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         from_id = intent.getStringExtra("from_id");
         from_name = intent.getStringExtra("from_name");
         host_name = intent.getStringExtra("host_name");
-        type = intent.getStringExtra("type");
+        description = intent.getStringExtra("description");
+        is_everyday = intent.getStringExtra("is_everyday");
+        state = intent.getStringExtra("state");
+        begin_originally = intent.getStringExtra("begin");
+        end_originally = intent.getStringExtra("end");
+        id = intent.getStringExtra("id");
+        Log.d("test",host_id+"  "+from_id+"  "+from_name+"  "+host_name+"  "+description+"  "+
+                is_everyday+"  "+state+"  "+begin_originally+"  "+end_originally+"  "+id);
+
+        //删除按钮
+        delete = (RelativeLayout)findViewById(R.id.delete);
+        delete.setOnClickListener(this);
 
         //时间选择器
         begin = (RelativeLayout)findViewById(R.id.begintime);
@@ -87,46 +109,59 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         current_end = (TextView)findViewById(R.id.current_end) ;
         initDatePicker();
 
-        //spinner 选择器
+        //spinner 选择器,选择是否为每日计划
         spinner = (Spinner) findViewById(R.id.spinner);
-        adapter = new MyAdapter(this, dataList);
-        spinner.setAdapter(adapter);
+        myAdapter = new MyAdapter(this, dataList);
+        spinner.setAdapter(myAdapter);
+        spinner.setSelection(Integer.valueOf(is_everyday),true);
+        //spinner 选择器,选择状态如何
+        spinner2 = (Spinner) findViewById(R.id.spinner2);
+        myAdapter2 = new MyAdapter(this, dataList2);
+        spinner2.setAdapter(myAdapter2);
+        spinner2.setSelection(Integer.valueOf(state),true);
 
         toolbar = (Toolbar) findViewById(R.id.white_toolbar_add);//标题栏的绑定
         setSupportActionBar(toolbar);
         Button add_to_net = toolbar.findViewById(R.id.add_to_net);//发布按钮
         add_to_net.setOnClickListener(this);
 
+        //描述输入框
         content_editText = (EditText)findViewById(R.id.content_editText);
+        content_editText.setText(description);
 
+        //设置标识所属人和制定人的文字
         TextView hf_label = (TextView)findViewById(R.id.title_editText);
         String a = "from:"+from_name;
         String b = "  to:"+host_name;
         hf_label.setText(a + b);
-    }
 
-    private void linkFailure(){//网络错误后
-        runOnUiThread(new Runnable() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("删除这条计划？");
+        //点击对话框以外的区域是否让对话框消失
+        builder.setCancelable(true);
+        //设置正面按钮
+        builder.setPositiveButton("好的", new DialogInterface.OnClickListener() {
             @Override
-            public void run() {
-                showToase("链接失败");
+            public void onClick(DialogInterface dialog, int which) {
+                deletePlan();
+                dialog.dismiss();
             }
         });
+        //设置反面按钮
+        builder.setNegativeButton("不好", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
     }
 
-    private void send_to_net1(){
+    private void deletePlan(){
         RequestBody requestBody = new FormBody.Builder()
-                .add("host_id",host_id)
-                .add("from_id",from_id)
-                .add("begin",begin_time)
-                .add("end",end_time)
-                .add("description",content_editText.getText().toString())
-                .add("last_days","0")
-                .add("is_everyday",Integer.toString(label))
-                .add("state","0")
-                .add("from_name",from_name)
+                .add("id",id)
                 .build();
-        HttpUtil.sendOkHttpRequest("http://120.79.137.28/tp/public/index.php/index/Plan/addPlanMyself",requestBody,new okhttp3.Callback(){
+        HttpUtil.sendOkHttpRequest("http://120.79.137.28/tp/public/index.php/index/Plan/deletePlan",requestBody,new okhttp3.Callback(){
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseData = response.body().string();
@@ -161,19 +196,29 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         });
     }
 
-    private void send_to_net2(){
+    private void linkFailure(){//网络错误后
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                showToase("链接失败");
+            }
+        });
+    }
+
+    private void send_to_net(){
         RequestBody requestBody = new FormBody.Builder()
+                .add("id",id)
                 .add("host_id",host_id)
                 .add("from_id",from_id)
                 .add("begin",begin_time)
                 .add("end",end_time)
                 .add("description",content_editText.getText().toString())
                 .add("last_days","0")
-                .add("is_everyday",Integer.toString(label))
-                .add("state","0")
+                .add("is_everyday",Integer.toString(myAdapter.label))
+                .add("state",Integer.toString(myAdapter2.label))
                 .add("from_name",from_name)
                 .build();
-        HttpUtil.sendOkHttpRequest("http://120.79.137.28/tp/public/index.php/index/Plan/addPlanOther",requestBody,new okhttp3.Callback(){
+        HttpUtil.sendOkHttpRequest("http://120.79.137.28/tp/public/index.php/index/Plan/changePlanInformation",requestBody,new okhttp3.Callback(){
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseData = response.body().string();
@@ -192,7 +237,13 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
                         }
                     }, 500);//这里停留时间为1000=1s。
                 }else {
-                    showToase(baseJson.getMessage());
+                    msg = baseJson.getMessage();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToase(msg);
+                        }
+                    });
                 }
             }
             @Override
@@ -201,7 +252,6 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
             }
         });
     }
-
     /*
     * 将时间转换为时间戳
     */
@@ -213,6 +263,14 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         ts = ts/1000;//java中时间戳精确到毫秒，所以会多出三位
         res = String.valueOf(ts);
         return res;
+    }
+
+    private static String TimeStamp2Date(String timestampString, String formats) {//将Unix时间截转换成能看懂的字符串
+        if (TextUtils.isEmpty(formats))
+            formats = "yyyy-MM-dd HH:mm";
+        Long timestamp = Long.parseLong(timestampString) * 1000;
+        String date = new java.text.SimpleDateFormat(formats, Locale.CHINA).format(new java.util.Date(timestamp));
+        return date;
     }
 
     @Override
@@ -236,22 +294,22 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                if (type.equals("0")){
-                    send_to_net1();
-                }else if (type.equals("1")){
-                    send_to_net2();
-                }
-
+                send_to_net();
+                break;
+            case R.id.delete:
+                dialog.show();
+                break;
         }
     }
 
     private void initDatePicker() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA);
         String now = sdf.format(new Date());
-        current_begin.setText(now);
-        current_end.setText(now);
-        begin_time = now;
-        end_time = now;
+        begin_time = TimeStamp2Date(begin_originally,"yyyy-MM-dd HH:mm");
+        end_time = TimeStamp2Date(end_originally,"yyyy-MM-dd HH:mm");
+        current_begin.setText(begin_time);
+        current_end.setText(end_time);
+
 
         customDatePicker1 = new CustomDatePicker(this, new CustomDatePicker.ResultHandler() {
             @Override
@@ -294,6 +352,7 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
     //自定义Spinner的适配器
     private class MyAdapter extends BaseAdapter {
 
+        public int label=0;
         private Context mContext;
         private List<String> mList;
 
@@ -322,18 +381,18 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
 
-            AddPlanActivity.ViewHolder holder = null;
+            ChangePlanActivity.ViewHolder holder = null;
 
             if (convertView == null) {
-                convertView = View.inflate(AddPlanActivity.this, R.layout.memu_item, null);
+                convertView = View.inflate(ChangePlanActivity.this, R.layout.memu_item, null);
 
-                holder = new AddPlanActivity.ViewHolder();
+                holder = new ChangePlanActivity.ViewHolder();
 
                 holder.tv = (TextView) convertView.findViewById(R.id.tv);
 
                 convertView.setTag(holder);
             } else {
-                holder = (AddPlanActivity.ViewHolder) convertView.getTag();
+                holder = (ChangePlanActivity.ViewHolder) convertView.getTag();
             }
             holder.tv.setText(mList.get(position));
 
@@ -345,13 +404,19 @@ public class AddPlanActivity extends BaseActivity implements View.OnClickListene
         private TextView tv;
     }
 
-    public static void actionStart(Context context,String host_id,String from_id,String host_name,String from_name,String type){
-        Intent intent = new Intent(context,AddPlanActivity.class);
+    public static void actionStart(Context context, String host_id, String from_id, String host_name, String from_name,
+                                   String description, String is_everyday, String state, String begin ,String end ,String id){
+        Intent intent = new Intent(context,ChangePlanActivity.class);
         intent.putExtra("host_id",host_id);
         intent.putExtra("from_id",from_id);
         intent.putExtra("host_name",host_name);
         intent.putExtra("from_name",from_name);
-        intent.putExtra("type",type);
+        intent.putExtra("description",description);
+        intent.putExtra("is_everyday",is_everyday);
+        intent.putExtra("state",state);
+        intent.putExtra("begin",begin);
+        intent.putExtra("end",end);
+        intent.putExtra("id",id);
         context.startActivity(intent);
     }
 }

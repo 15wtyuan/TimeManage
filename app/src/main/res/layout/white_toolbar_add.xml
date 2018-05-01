@@ -37,7 +37,7 @@
             android:background="@drawable/green_button"
             android:text="发布"
             android:textColor="#FFFFFF"
-            android:textSize="16.67sp"
+            android:textSize="13.67sp"
             android:radius="10dp"/>
     </RelativeLayout>
 </android.support.v7.widget.Toolbar>
