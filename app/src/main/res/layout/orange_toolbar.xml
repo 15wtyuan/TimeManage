@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:id="@+id/green_toolbar_homepage"
+    android:id="@+id/orange_toolbar"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:navigationIcon="@mipmap/my_page_icon"
-    android:navigationIcon="@mipmap/my_page_icon"
+    app:navigationIcon="@mipmap/navigationicon_white"
+    android:navigationIcon="@mipmap/navigationicon_white"
     android:layout_height="56dp"
     android:background="@color/orange">
 
@@ -15,5 +16,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:textSize="16.67sp"
-        android:textColor="#212121"/>
+        android:textColor="@color/white"/>
 </android.support.v7.widget.Toolbar>

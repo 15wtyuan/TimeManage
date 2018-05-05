@@ -9,18 +9,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.liaoinstan.springview.widget.SpringView
-            android:id="@+id/springview"
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/planList" />
-
-        </com.liaoinstan.springview.widget.SpringView>
+            android:layout_height="wrap_content"
+            android:id="@+id/planList" />
 
         <include
             android:id="@+id/green_toolbar_homepage"

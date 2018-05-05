@@ -14,7 +14,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.liaoinstan.springview.widget.SpringView;
 import com.nightonke.boommenu.BoomButtons.OnBMClickListener;
 import com.nightonke.boommenu.BoomButtons.TextOutsideCircleButton;
 import com.nightonke.boommenu.BoomMenuButton;
@@ -54,7 +53,6 @@ public class HomePageActivity extends BaseActivity {
     private List<PlanData> planDataList = new ArrayList<>();
 
     private RecyclerView planList;
-    private SpringView springView;//上拉下拉
 
     private PlanListAdapter planListAdapter;
 
@@ -85,7 +83,7 @@ public class HomePageActivity extends BaseActivity {
 
         toolbar = (Toolbar) findViewById(R.id.green_toolbar_homepage);//标题栏的绑定
         ToolBarHelper toolbarHelper = new ToolBarHelper(toolbar);
-        toolbarHelper.setTitle("老婆大人听你的");
+        toolbarHelper.setTitle("今天的计划");
         toolbarHelper.setTitlesColor(Color.WHITE);
         toolbar = toolbarHelper.getToolbar();
         setSupportActionBar(toolbar);
@@ -204,10 +202,20 @@ public class HomePageActivity extends BaseActivity {
 
                                     break;
                                 case 1:
-
+                                    new Timer().schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            FriendsActivity.actionStart(HomePageActivity.this);
+                                        }
+                                    }, 300);//这里停留时间为1000=1s。
                                     break;
                                 case 2:
-
+                                    new Timer().schedule(new TimerTask() {
+                                        @Override
+                                        public void run() {
+                                            AddFriendActivity.actionStart(HomePageActivity.this,Integer.toString(userData.getUid()));
+                                        }
+                                    }, 300);//这里停留时间为1000=1s。
                                     break;
                             }
                         }
@@ -261,10 +269,10 @@ public class HomePageActivity extends BaseActivity {
         public void itemClick(DrawerAdapter.DrawerItemNormal drawerItemNormal) {
             switch (drawerItemNormal.name) {
                 case "我的朋友":
-                    showToase("我的朋友");
+                    FriendsActivity.actionStart(HomePageActivity.this);
                     break;
                 case "我的消息":
-                    showToase("我的消息");
+                    showToase("暂无");
                     break;
                 case "退出登陆":
                     showToase("退出登陆");

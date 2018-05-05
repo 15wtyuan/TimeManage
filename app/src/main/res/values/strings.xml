@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TimeManage</string>
+    <string name="app_name">加个计划</string>
     <string name="cancle">取消</string>
     <string name="title">请选择时间</string>
     <string name="commit">确定</string>

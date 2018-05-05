@@ -116,7 +116,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.DrawerView
                     activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            activity.showToase("我的");
+                            //干点什么
                         }
                     });
                 }
