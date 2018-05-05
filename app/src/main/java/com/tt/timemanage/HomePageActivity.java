@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
@@ -178,8 +179,15 @@ public class HomePageActivity extends BaseActivity {
             @Override
             public void run() {
                 planListAdapter.notifyDataSetChanged();//更新planList的RecyclerView
+                showToase("已更新");
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {//新消息按钮
+        getMenuInflater().inflate(R.menu.refresh_item,menu);
+        return true;
     }
 
     private void initBoomMenuButton(){//初始化悬浮按钮
@@ -336,8 +344,9 @@ public class HomePageActivity extends BaseActivity {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);//打开侧滑菜单
                 break;
-//            case R.id.alert_button://新消息
-//                showToase("新消息");
+            case R.id.refresh_button://新消息
+                showToase("正在更新");
+                initPlanList();
             default:
                 return super.onOptionsItemSelected(item);
         }
